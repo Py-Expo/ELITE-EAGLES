@@ -1,0 +1,84 @@
+import csv
+
+class CalorieCalculator:
+    def __init__(self, dataset_path, food_dataset_path, bmi_dataset_path):
+        self.dataset_path = dataset_path
+        self.food_dataset_path = food_dataset_path
+        self.bmi_dataset_path = bmi_dataset_path
+        self.calorie_data = self.load_calorie_data()
+        self.food_data = self.load_food_data()
+        self.bmi_data = self.load_bmi_data()
+
+    def load_calorie_data(self):
+        calorie_data = []
+        try:
+            with open(self.dataset_path, 'r', newline='') as file:
+                reader = csv.DictReader(file)
+                for row in reader:
+                    calorie_data.append(row)
+        except FileNotFoundError:
+            print(f"Error: Calorie data file '{self.dataset_path}' not found.")
+        except Exception as e:
+            print("An error occurred while loading calorie data:", str(e))
+        return calorie_data
+
+    def load_food_data(self):
+        food_data = {}
+        try:
+            with open(self.food_dataset_path, 'r', newline='') as file:
+                reader = csv.DictReader(file)
+                for row in reader:
+                    food_data[row['FoodItem'].lower()] = int(row['calories per serving'].split()[0]) # Split to remove 'cal' from calorie count
+        except FileNotFoundError:
+            print(f"Error: Food data file '{self.food_dataset_path}' not found.")
+        except Exception as e:
+            print("An error occurred while loading food data:", str(e))
+        return food_data
+
+    def load_bmi_data(self):
+        bmi_data = {}
+        try:
+            with open(self.bmi_dataset_path, 'r', newline='') as file:
+                reader = csv.DictReader(file)
+                for row in reader:
+                    bmi_data[(row['Gender'], int(row['Index']))] = int(row['calories'])
+        except FileNotFoundError:
+            print(f"Error: BMI data file '{self.bmi_dataset_path}' not found.")
+        except Exception as e:
+            print("An error occurred while loading BMI data:", str(e))
+        return bmi_data
+
+    def calculate_calories(self, gender, height, weight, index):
+        # Get suggested calorie intake based on BMI index and gender
+        suggested_calories = self.bmi_data.get((gender, index))
+        if suggested_calories is not None:
+            return suggested_calories
+        else:
+            print("Error: Calorie recommendation not found for the given gender and BMI.")
+            return None
+
+    def get_food_calories(self, food_item):
+        if food_item.lower() in self.food_data:
+            return self.food_data[food_item.lower()]
+        else:
+            return None  # Return None if food item not found
+
+def main():
+    dataset_path = 'C:\\Users\\USER\\OneDrive\\Documents\\elite eagles\\calories.csv'
+    food_dataset_path = 'C:\\Users\\USER\\OneDrive\\Documents\\elite eagles\\food_data.csv'
+    bmi_dataset_path = 'C:\\Users\\USER\\OneDrive\\Documents\\elite eagles\\bmi.csv'
+    calculator = CalorieCalculator(dataset_path, food_dataset_path, bmi_dataset_path)
+
+    # Get user inputs
+    gender = input("Enter your gender (Male/Female): ")
+    height = int(input("Enter your height in cm: "))
+    weight = int(input("Enter your weight in kg: "))
+    index = int(input("Enter your BMI index (0-5): "))
+
+    # Calculate suggested calorie intake
+    suggested_calories = calculator.calculate_calories(gender, height, weight, index)
+    if suggested_calories is not None:
+        print(f"Suggested daily calorie intake: {suggested_calories} calories.")
+
+if __name__ == "__main__":
+    main()

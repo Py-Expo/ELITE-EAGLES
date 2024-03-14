@@ -1,0 +1,12 @@
+2. Related Works
+A plethora of research efforts has explored the application of machine learning algorithms in dietary analysis and calorie counting. From Random Forests to deep learning techniques, studies have delved into leveraging computational tools to accurately estimate the nutritional content of food items. Zhang et al. [1] proposed a system for food classification and calorie estimation using Random Forests, highlighting the efficacy of such algorithms in dietary assessment. Furthermore, advancements in data collection methodologies, including web scraping and API integration, have augmented the capabilities of calorie counting systems, paving the way for more accurate and comprehensive dietary analysis.
+
+
+3. Techniques Used
+3.1 Data Collection: The foundation of any calorie counting system lies in the availability of extensive and reliable data on food composition. In this project, data collection encompasses a multifaceted approach, including sourcing nutritional information from established databases, leveraging APIs provided by food authorities, and implementing web scraping techniques to extract data from online sources. Moreover, the system incorporates user input functionality, allowing for the inclusion of custom food items to cater to individual preferences and dietary habits.
+
+
+3.2 Feature Selection: Central to the accuracy of calorie estimation algorithms is the meticulous selection of relevant features that encapsulate the nutritional profile of food items. Through comprehensive feature selection and engineering processes, the system identifies key attributes such as macronutrient content, serving size, preparation method, and ingredient variations, ensuring a holistic representation of each food item's nutritional composition.
+3.3 Algorithm Development: At the heart of the food calculator system lies the development and implementation of robust algorithms capable of accurately estimating calorie counts based on the selected features. Drawing upon machine learning principles and statistical analysis, the algorithms undergo rigorous training and optimization to achieve the highest levels of accuracy and reliability. Moreover, considerations such as cooking methods, ingredient interactions, and portion sizes are factored into the algorithmic framework to enhance the precision of calorie estimation.
+
+

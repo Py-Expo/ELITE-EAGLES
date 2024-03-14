@@ -1,0 +1,120 @@
+import csv
+
+class CalorieCalculator:
+    def __init__(self, dataset_path, food_dataset_path, bmi_dataset_path):
+        self.dataset_path = dataset_path
+        self.food_dataset_path = food_dataset_path
+        self.bmi_dataset_path = bmi_dataset_path
+        self.calorie_data = self.load_calorie_data()
+        self.food_data = self.load_food_data()
+        self.bmi_data = self.load_bmi_data()
+
+    def load_calorie_data(self):
+        calorie_data = []
+        try:
+            with open(self.dataset_path, 'r', newline='') as file:
+                reader = csv.DictReader(file)
+                for row in reader:
+                    calorie_data.append(row)
+        except FileNotFoundError:
+            print(f"Error: Calorie data file '{self.dataset_path}' not found.")
+        except Exception as e:
+            print("An error occurred while loading calorie data:", str(e))
+        return calorie_data
+
+    def load_food_data(self):
+        food_data = {}
+        try:
+            with open(self.food_dataset_path, 'r', newline='') as file:
+                reader = csv.DictReader(file)
+                for row in reader:
+                    food_data[row['FoodItem'].lower()] = int(row['calories per serving'].split()[0]) # Split to remove 'cal' from calorie count
+        except FileNotFoundError:
+            print(f"Error: Food data file '{self.food_dataset_path}' not found.")
+        except Exception as e:
+            print("An error occurred while loading food data:", str(e))
+        return food_data
+
+    def load_bmi_data(self):
+        bmi_data = {}
+        try:
+            with open(self.bmi_dataset_path, 'r', newline='') as file:
+                reader = csv.DictReader(file)
+                for row in reader:
+                    bmi_data[(row['Gender'], int(row['Index']))] = int(row['calories'])
+        except FileNotFoundError:
+            print(f"Error: BMI data file '{self.bmi_dataset_path}' not found.")
+        except Exception as e:
+            print("An error occurred while loading BMI data:", str(e))
+        return bmi_data
+
+    def calculate_calories(self, age, gender, weight, height, activity_level):
+        # Calculate BMI
+        bmi = (weight / (height / 100) ** 2)
+        
+        # Determine BMI range
+        bmi_range = self.get_bmi_range(bmi)
+        
+        # Get suggested calorie intake based on BMI range and activity level
+        suggested_calories = self.bmi_data.get((gender, bmi_range))
+        
+        return suggested_calories
+
+    def get_food_calories(self, food_item):
+        if food_item.lower() in self.food_data:
+            return self.food_data[food_item.lower()]
+        else:
+            return None  # Return None if food item not found
+
+    def get_bmi_range(self, bmi):
+        # Determine BMI range based on BMI value
+        if bmi < 18.5:
+            return 0
+        elif 18.5 <= bmi < 25:
+            return 1
+        elif 25 <= bmi < 30:
+            return 2
+        elif 30 <= bmi < 35:
+            return 3
+        elif 35 <= bmi < 40:
+            return 4
+        else:
+            return 5
+
+def main():
+    dataset_path = 'C:\\Users\\Yuvan Raja\\Downloads\\ee1 (1)\\elite eagles\\cal data.csv'
+    food_dataset_path = 'C:\\Users\\Yuvan Raja\\Downloads\\ee1 (1)\\elite eagles\\food  data.csv'
+    bmi_dataset_path = 'C:\\Users\\Yuvan Raja\\Downloads\\ee1 (1)\\elite eagles\\bmi.csv'
+    calculator = CalorieCalculator(dataset_path, food_dataset_path, bmi_dataset_path)
+
+    # Ask the user for choice
+    choice = input("Enter 1 for calorie count for food or 2 for BMI-based calorie suggestion: ")
+
+    if choice == '1':
+        # Ask the user to enter a food item for calorie counting
+        food_item = input("Enter the food item for calorie counting: ")
+        calories = calculator.get_food_calories(food_item)
+        if calories is not None:
+            print(f"The calorie count for {food_item} is {calories} calories per serving.")
+        else:
+            print("Food item not found in the database.")
+    elif choice == '2':
+        # Get user inputs for BMI calculation
+        gender = input("Enter your gender (Male/Female): ")
+        height = int(input("Enter your height in cm: "))
+        weight = int(input("Enter your weight in kg: "))
+
+        # Calculate BMI and suggest calorie intake
+        bmi = (weight / (height / 100) ** 2)
+        bmi_range = calculator.get_bmi_range(bmi)
+        suggested_calories = calculator.calculate_calories(None, gender, weight, height, None)
+
+        if suggested_calories is not None:
+            print(f"Suggested daily calorie intake based on BMI: {suggested_calories} calories.")
+        else:
+            print("Calorie intake recommendation not available for the given BMI range.")
+    else:
+        print("Invalid choice.")
+
+if __name__ == "__main__":
+    main()
